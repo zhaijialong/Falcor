@@ -47,24 +47,3 @@ struct ShadowPassVSOut
     float4 pos : POSITION;
 };
 
-[instance(_CASCADE_COUNT)]
-[maxvertexcount(3)]
-void main(triangle ShadowPassVSOut input[3], uint InstanceID : SV_GSInstanceID, inout TriangleStream<ShadowPassPSIn> outStream)
-{
-    ShadowPassPSIn outputData;
-
-    for(int i = 0 ; i < 3 ; i++)
-    {
-        outputData.pos = mul(input[i].pos, gCsmData.globalMat);
-        outputData.pos.xyz /= input[i].pos.w;
-        outputData.pos.xyz *= gCsmData.cascadeScale[InstanceID].xyz;
-        outputData.pos.xyz += gCsmData.cascadeOffset[InstanceID].xyz;
-
-        outputData.texC = input[i].texC;
-        outputData.rtIndex = InstanceID;
-
-        outStream.Append(outputData);
-    }
-
-    outStream.RestartStrip();
-}

@@ -27,6 +27,20 @@
 ***************************************************************************/
 __import DefaultVS;
 __import ShaderCommon;
+__import Effects.CascadedShadowMap;
+
+layout(binding = 0) SamplerState alphaSampler : register(s0);
+layout(binding = 1) texture2D alphaMap : register(t0);
+
+layout(binding = 2) cbuffer AlphaMapCB : register(b1)
+{
+    float alphaThreshold;
+};
+
+layout(binding = 3) cbuffer PerLightCB : register(b0)
+{
+    CsmData gCsmData;
+};
 
 struct ShadowPassVSOut
 {
@@ -38,7 +52,14 @@ struct ShadowPassVSOut
 #endif
 };
 
-ShadowPassVSOut main(VertexIn vIn)
+struct ShadowPassPSIn
+{
+    float2 texC : TexCoord;
+    float4 pos : SV_POSITION;
+    uint rtIndex : SV_RenderTargetArrayIndex;
+};
+
+ShadowPassVSOut vs(VertexIn vIn)
 {
     ShadowPassVSOut vOut; 
     float4x4 worldMat = getWorldMat(vIn);
@@ -53,4 +74,57 @@ ShadowPassVSOut main(VertexIn vIn)
     vOut.texC = float2(0.5f, 0.5f);
 #endif
     return vOut;
+}
+
+#if defined(_VSM) || defined(_EVSM2)
+float2 ps(ShadowPassPSIn pIn) : SV_TARGET0
+#elif defined(_EVSM4)
+float4 ps(ShadowPassPSIn pIn) : SV_TARGET0
+#else
+void ps(ShadowPassPSIn pIn)
+#endif
+{
+#ifdef TEST_ALPHA
+    float alpha = alphaMap.Sample(alphaSampler, pIn.texC)._ALPHA_CHANNEL;
+    if (alpha < alphaThreshold)
+    {
+        discard;
+    }
+#endif
+
+    float2 depth = saturate(pIn.pos.zz);
+
+#if defined(_EVSM2) || defined(_EVSM4)
+    depth = applyEvsmExponents(depth.x, gCsmData.evsmExponents);
+#endif
+    float4 outDepth = float4(depth, depth*depth);
+
+#ifdef _EVSM4
+    return outDepth.xzyw;
+#elif defined(_VSM) || defined(_EVSM2)
+    return outDepth.xz;
+#else
+#endif
+}
+
+[instance(_CASCADE_COUNT)]
+[maxvertexcount(3)]
+void gs(triangle ShadowPassVSOut input[3], uint InstanceID : SV_GSInstanceID, inout TriangleStream<ShadowPassPSIn> outStream)
+{
+    ShadowPassPSIn outputData;
+
+    for (int i = 0; i < 3; i++)
+    {
+        outputData.pos = mul(input[i].pos, gCsmData.globalMat);
+        outputData.pos.xyz /= input[i].pos.w;
+        outputData.pos.xyz *= gCsmData.cascadeScale[InstanceID].xyz;
+        outputData.pos.xyz += gCsmData.cascadeOffset[InstanceID].xyz;
+
+        outputData.texC = input[i].texC;
+        outputData.rtIndex = InstanceID;
+
+        outStream.Append(outputData);
+    }
+
+    outStream.RestartStrip();
 }

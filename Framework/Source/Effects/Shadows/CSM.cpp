@@ -35,9 +35,7 @@
 
 namespace Falcor
 {
-    const char* kDepthPassVSFile = "Effects/ShadowPass.vs.slang";
-    const char* kDepthPassGsFile = "Effects/ShadowPass.gs.slang";
-    const char* kDepthPassPsFile = "Effects/ShadowPass.ps.slang";
+    const char* kDepthPassFile = "Effects/ShadowPass.slang";
 
     const Gui::DropdownList kFilterList = {
         { (uint32_t)CsmFilterPoint, "Point" },
@@ -219,7 +217,7 @@ namespace Falcor
             cascadeCount = 1;
         }
         mCsmData.cascadeCount = cascadeCount;
-        GraphicsProgram::SharedPtr pProg = GraphicsProgram::createFromFile(kDepthPassVSFile, "main", "");
+        GraphicsProgram::SharedPtr pProg = GraphicsProgram::createFromFile(kDepthPassFile, "vs", "");
         pProg->addDefine("_APPLY_PROJECTION");
         mDepthPass.pState = GraphicsState::create();
         mDepthPass.pState->setProgram(pProg);
@@ -324,7 +322,7 @@ namespace Falcor
 
         // Create the shadows program
         GraphicsProgram::Desc d;
-        d.addShaderModule(kDepthPassVSFile).vsEntry("main").addShaderModule(kDepthPassGsFile).gsEntry("main").addShaderModule(kDepthPassPsFile).psEntry("main");
+        d.addShaderModule(kDepthPassFile).vsEntry("vs").psEntry("ps").gsEntry("gs");
         GraphicsProgram::SharedPtr pProg = GraphicsProgram::create(d, progDef);
 
         mShadowPass.pState = GraphicsState::create();
