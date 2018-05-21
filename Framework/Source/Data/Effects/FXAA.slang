@@ -2125,9 +2125,12 @@ cbuffer PerFrameCB : register(b1)
 SamplerState gSampler;
 Texture2D gSrc;
 
-float4 main(float2 texC : TEXCRD) : SV_TARGET
+float4 main(float2 texC : TEXCOORD) : SV_TARGET
 {
-    FxaaTex InputFXAATex = { gSampler, gSrc };
+    FxaaTex InputFXAATex;
+    InputFXAATex.smpl = gSampler;
+    InputFXAATex.tex = gSrc;
+
     return FxaaPixelShader(
         texC, // FxaaFloat2 pos,
         FxaaFloat4(0.0f, 0.0f, 0.0f, 0.0f), // FxaaFloat4 fxaaConsolePosPos,
