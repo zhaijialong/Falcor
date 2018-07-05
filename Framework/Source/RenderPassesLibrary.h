@@ -1,5 +1,5 @@
 /***************************************************************************
-# Copyright (c) 2015, NVIDIA CORPORATION. All rights reserved.
+# Copyright (c) 2018, NVIDIA CORPORATION. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -26,32 +26,36 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
 #pragma once
-#include "Graphics/RenderGraph/RenderPass.h"
-#include "API/Texture.h"
+#include <functional>
+#include <vector>
+#include <memory>
+#include <unordered_map>
 
 namespace Falcor
 {
-    class BlitPass : public RenderPass, inherit_shared_from_this<RenderPass, BlitPass>
+    class RenderPass;
+    class Device;
+
+    struct RenderPassDesc
+    {
+        using CreateFunc = std::function<std::shared_ptr<RenderPass>()>;
+        const char* name = nullptr;
+        const char* desc = nullptr;
+        CreateFunc func = nullptr;
+
+        RenderPassDesc() = default;
+        RenderPassDesc(const char* name_, const char* desc_, CreateFunc func_) : name(name_), desc(desc_), func(func_) {}
+    };
+
+    using RenderPassLibraryFunc = void(std::shared_ptr<Device> pDevice, std::vector<RenderPassDesc>& passesList);
+    static const char* kDllFuncName = "getRenderPassList";
+
+    class RenderPassLibrary
     {
     public:
-        using SharedPtr = std::shared_ptr<BlitPass>;
-
-        /** Create a new object
-        */
-        static SharedPtr create();
-
-        virtual void execute(RenderContext* pContext) override;
-        virtual bool isValid(std::string& log = std::string()) override;
-        virtual bool setInput(const std::string& name, const std::shared_ptr<Resource>& pResource) override;
-        virtual bool setOutput(const std::string& name, const std::shared_ptr<Resource>& pResource) override;
-        virtual PassData getRenderPassData() const override { return kRenderPassData; }
-        virtual std::shared_ptr<Resource> getOutput(const std::string& name) const override;
-        virtual std::shared_ptr<Resource> getInput(const std::string& name) const override;
-
-    private:
-        BlitPass();
-        static const PassData kRenderPassData;
-        Texture::SharedPtr mpSrc;
-        Texture::SharedPtr mpDst;
+        static bool addLibrary(const char* libraryName);
+        static const RenderPassDesc* getRenderPassDesc(const std::string& name);
+        static std::shared_ptr<RenderPass> createRenderPass(const std::string& name);
+        static void unloadAllLibraries();
     };
 }

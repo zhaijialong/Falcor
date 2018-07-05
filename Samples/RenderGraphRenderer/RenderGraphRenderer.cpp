@@ -55,8 +55,8 @@ void RenderGraphRenderer::loadScene(const std::string& filename, bool showProgre
 void RenderGraphRenderer::onLoad(SampleCallbacks* pSample, const RenderContext::SharedPtr& pRenderContext)
 {
     mpGraph = RenderGraph::create();
-    mpGraph->addRenderPass(SceneRenderPass::create(), "SceneRenderer");
-    mpGraph->addRenderPass(BlitPass::create(), "BlitPass");
+    mpGraph->addRenderPass("SceneRendererPass", "SceneRenderer");
+    mpGraph->addRenderPass("BlitPass", "BlitPass");
 
     mpGraph->addEdge("SceneRenderer.color", "BlitPass.src");
 

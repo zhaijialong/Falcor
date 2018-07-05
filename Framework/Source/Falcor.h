@@ -112,10 +112,6 @@
 #include "Graphics/RenderGraph/RenderGraph.h"
 #include "Graphics/RenderGraph/RenderPass.h"
 
-// Render passes
-#include "RenderPasses/SceneRenderPass.h"
-#include "RenderPasses/BlitPass.h"
-
 // Utils
 #include "Utils/Bitmap.h"
 #include "Utils/DDSHeader.h"

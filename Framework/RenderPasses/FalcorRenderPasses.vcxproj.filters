@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="BlitPass">
+      <UniqueIdentifier>{5c82116a-0ad3-429c-9b6b-438d8c924a07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneRendererPass">
+      <UniqueIdentifier>{04b84226-57db-4f9d-9d98-fae22abff722}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BlitPass\BlitPass.cpp">
+      <Filter>BlitPass</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneRendererPass\SceneRenderPass.cpp">
+      <Filter>SceneRendererPass</Filter>
+    </ClCompile>
+    <ClCompile Include="FalcorRenderPasses.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BlitPass\BlitPass.h">
+      <Filter>BlitPass</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneRendererPass\SceneRenderPass.h">
+      <Filter>SceneRendererPass</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

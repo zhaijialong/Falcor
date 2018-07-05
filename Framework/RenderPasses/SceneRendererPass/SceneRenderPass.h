@@ -32,9 +32,9 @@
 #include "Graphics/GraphicsState.h"
 #include "Graphics/Scene/SceneRenderer.h"
 
-namespace Falcor
+namespace FalcorRenderPasses
 {
-    class SceneRenderPass : public RenderPass, inherit_shared_from_this<RenderPass, SceneRenderPass>
+    class SceneRenderPass : public Falcor::RenderPass, Falcor::inherit_shared_from_this<Falcor::RenderPass, SceneRenderPass>
     {
     public:
         using SharedPtr = std::shared_ptr<SceneRenderPass>;
@@ -43,22 +43,22 @@ namespace Falcor
         */
         static SharedPtr create();
 
-        virtual void execute(RenderContext* pContext) override;
+        virtual void execute(Falcor::RenderContext* pContext) override;
         virtual bool isValid(std::string& log = std::string()) override;
-        virtual bool setInput(const std::string& name, const std::shared_ptr<Resource>& pResource) override;
-        virtual bool setOutput(const std::string& name, const std::shared_ptr<Resource>& pResource) override;
+        virtual bool setInput(const std::string& name, const std::shared_ptr<Falcor::Resource>& pResource) override;
+        virtual bool setOutput(const std::string& name, const std::shared_ptr<Falcor::Resource>& pResource) override;
         virtual PassData getRenderPassData() const override { return kRenderPassData; }
         virtual void sceneChangedCB() override;
-        virtual std::shared_ptr<Resource> getOutput(const std::string& name) const override;
+        virtual std::shared_ptr<Falcor::Resource> getOutput(const std::string& name) const override;
 
-        virtual void onGuiRender(SampleCallbacks* pSample, Gui* pGui) override;
+        virtual void onGuiRender(Falcor::SampleCallbacks* pSample, Falcor::Gui* pGui) override;
     private:
         SceneRenderPass();
         static const PassData kRenderPassData;
-        Fbo::SharedPtr mpFbo;
-        GraphicsState::SharedPtr mpState;
-        GraphicsVars::SharedPtr mpVars;
-        SceneRenderer::SharedPtr mpSceneRenderer;
+        Falcor::Fbo::SharedPtr mpFbo;
+        Falcor::GraphicsState::SharedPtr mpState;
+        Falcor::GraphicsVars::SharedPtr mpVars;
+        Falcor::SceneRenderer::SharedPtr mpSceneRenderer;
         vec4 mClearColor = vec4(1);
     };
 }

@@ -541,12 +541,7 @@
     <ClCompile Include="Graphics\RenderGraph\RenderGraph.cpp">
       <Filter>Graphics\RenderGraph</Filter>
     </ClCompile>
-    <ClCompile Include="RenderPasses\SceneRenderPass.cpp">
-      <Filter>RenderPasses</Filter>
-    </ClCompile>
-    <ClCompile Include="RenderPasses\BlitPass.cpp">
-      <Filter>RenderPasses</Filter>
-    </ClCompile>
+    <ClCompile Include="RenderPassesLibrary.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Graphics\Model\Animation.h">
@@ -1711,15 +1706,11 @@
     <ClInclude Include="Graphics\RenderGraph\RenderPass.h">
       <Filter>Graphics\RenderGraph</Filter>
     </ClInclude>
-    <ClInclude Include="RenderPasses\SceneRenderPass.h">
-      <Filter>RenderPasses</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPasses\BlitPass.h">
-      <Filter>RenderPasses</Filter>
-    </ClInclude>
     <ClInclude Include="Utils\DirectedGraph.h">
       <Filter>Utils</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\DirectedGraphTraversal.h" />
+    <ClInclude Include="RenderPassesLibrary.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Externals">
@@ -1910,9 +1901,6 @@
     </Filter>
     <Filter Include="Graphics\RenderGraph">
       <UniqueIdentifier>{60443751-4f7a-4361-adb2-d3e6edabecf8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RenderPasses">
-      <UniqueIdentifier>{c211a7c2-a22a-4745-9a23-42e98dbff40c}</UniqueIdentifier>
     </Filter>
     <Filter Include="Data\RenderPasses">
       <UniqueIdentifier>{6fb02568-1f63-46b7-baee-85e961051a76}</UniqueIdentifier>

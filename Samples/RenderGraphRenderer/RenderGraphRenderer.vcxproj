@@ -17,6 +17,9 @@
     <ClInclude Include="RenderGraphRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Framework\RenderPasses\FalcorRenderPasses.vcxproj">
+      <Project>{58b075c6-fc3f-47a0-b4c6-4ce336670945}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\..\Framework\Source\Falcor.vcxproj">
       <Project>{3b602f0e-3834-4f73-b97d-7dfc91597a98}</Project>
     </ProjectReference>

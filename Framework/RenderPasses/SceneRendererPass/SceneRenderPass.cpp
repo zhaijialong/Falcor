@@ -25,10 +25,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***************************************************************************/
-#include "Framework.h"
+#include "Falcor.h"
 #include "SceneRenderPass.h"
 
-namespace Falcor
+using namespace Falcor;
+
+namespace FalcorRenderPasses
 {
     static std::string kColor = "color";
     static std::string kDepth = "depth";

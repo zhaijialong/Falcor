@@ -29,6 +29,7 @@
 #include "RenderGraph.h"
 #include "API/FBO.h"
 #include "Utils/DirectedGraphTraversal.h"
+#include "RenderPassesLibrary.h"
 
 namespace Falcor
 {
@@ -79,6 +80,13 @@ namespace Falcor
         mNodeData[node] = pPass;
         mRecompile = true;
         return true;
+    }
+
+    bool RenderGraph::addRenderPass(const std::string& objectName, const std::string& passName)
+    {
+        auto pPass = RenderPassLibrary::createRenderPass(objectName);
+        if (pPass) return addRenderPass(pPass, passName);
+        else return false;
     }
 
     void RenderGraph::removeRenderPass(const std::string& name)

@@ -47,9 +47,13 @@ namespace Falcor
         */
         void setScene(const std::shared_ptr<Scene>& pScene);
 
-        /** Add a render-pass. The name has to be unique, otherwise the call will be ignored
+        /** Add a render-pass from an object. The name has to be unique, otherwise the call will be ignored
         */
         bool addRenderPass(const RenderPass::SharedPtr& pPass, const std::string& passName);
+
+        /** Add a render-pass from the library. The name has to be unique, otherwise the call will be ignored
+        */
+        bool addRenderPass(const std::string& objectName, const std::string& passName);
 
         /** Get a render-pass
         */
