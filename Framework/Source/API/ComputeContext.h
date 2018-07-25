@@ -102,6 +102,11 @@ namespace Falcor
         /** Submit the command list
         */
         virtual void flush(bool wait = false) override;
+
+        /** Invalidate the root-signature. This will force the root-signature and descriptor-sets to get bound. Useful in cases where the root/sets were modified by the user/external library
+        */
+        void invalidateComputeRootSignature() { mBindComputeRootSig = true; }
+
     protected:
         ComputeContext();
         void prepareForDispatch();

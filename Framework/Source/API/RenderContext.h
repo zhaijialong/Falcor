@@ -198,6 +198,10 @@ namespace Falcor
         */
         void resolveSubresource(const Texture* pSrc, uint32_t srcSubresource, const Texture* pDst, uint32_t dstSubresource);
 
+        /** Invalidate the root-signature. This will force the root-signature and descriptor-sets to get bound. Useful in cases where the root/sets were modified by the user/external library
+        */
+        void invalidateGraphicsRootSignature() { mBindGraphicsRootSig = true; }
+
 #ifdef FALCOR_DXR
         /** Submit a raytrace command. This function doesn't change the state of the render-context. Graphics/compute vars and state will stay the same
         */
