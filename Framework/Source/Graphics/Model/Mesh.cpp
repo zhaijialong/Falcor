@@ -55,6 +55,16 @@ namespace Falcor
         return SharedPtr(new Mesh(vertexBuffers, vertexCount, pIndexBuffer, indexCount, pLayout, topology, pMaterial, boundingBox, hasBones));
     }
 
+    Mesh::SharedPtr Mesh::createFromBoundingBoxBuffer(const Buffer::SharedPtr& pBboxBuffer, uint32_t boxCount, const Material::SharedPtr& pMaterial)
+    {
+        Vao::BufferVec bufVec;
+        bufVec.push_back(pBboxBuffer);
+        VertexLayout::SharedPtr pLayout = VertexLayout::create();
+        VertexBufferLayout::SharedPtr pBufLayout = VertexBufferLayout::create();
+        pLayout->addBufferLayout(0, pBufLayout);
+        return SharedPtr(new Mesh(bufVec, boxCount * 6, nullptr, 0, pLayout, Vao::Topology::BoundingBoxList, pMaterial, {}, false));
+    }
+
     Mesh::Mesh(const Vao::BufferVec& vertexBuffers,
         uint32_t vertexCount,
         const Buffer::SharedPtr& pIndexBuffer,
@@ -82,6 +92,9 @@ namespace Falcor
             break;
         case Vao::Topology::TriangleList:
             VertsPerPrim = 3;
+            break;
+        case Vao::Topology::BoundingBoxList:
+            VertsPerPrim = 6;
             break;
         default:
             should_not_get_here();

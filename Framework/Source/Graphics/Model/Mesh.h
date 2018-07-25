@@ -125,6 +125,7 @@ namespace Falcor
         // TODO: Get mesh ID in file mesh was loaded from (temporary, fix better solution later)
         const uint32_t getLoadId() const { return mLoadId; }
 
+        static SharedPtr createFromBoundingBoxBuffer(const Buffer::SharedPtr& pBboxBuffer, uint32_t boxCount, const Material::SharedPtr& pMaterial = nullptr);
     protected:
         friend AssimpModelImporter;
         friend BinaryModelImporter;

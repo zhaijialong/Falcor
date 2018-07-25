@@ -195,29 +195,40 @@ namespace Falcor
                 const Mesh* pMesh = getMesh((uint32_t)meshIndex).get();
 
                 D3D12_RAYTRACING_GEOMETRY_DESC& desc = geomDesc[meshIndex - blasData.meshBaseIndex];
-                desc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
-
-                // Get the position VB
                 const Vao* pVao = getMeshVao(pMesh).get();
-                const auto& elemDesc = pVao->getElementIndexByLocation(VERTEX_POSITION_LOC);
-                const auto& pVbLayout = pVao->getVertexLayout()->getBufferLayout(elemDesc.vbIndex);
+                if(pVao->getPrimitiveTopology() == Vao::Topology::TriangleList)
+                {
+                    desc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 
-                const Buffer* pVB = pVao->getVertexBuffer(elemDesc.vbIndex).get();
-                pContext->resourceBarrier(pVB, Resource::State::NonPixelShader);
-                desc.Triangles.VertexBuffer.StartAddress = pVB->getGpuAddress() + pVbLayout->getElementOffset(elemDesc.elementIndex);
-                desc.Triangles.VertexBuffer.StrideInBytes = pVbLayout->getStride();
-                desc.Triangles.VertexCount = pMesh->getVertexCount();
-                desc.Triangles.VertexFormat = getDxgiFormat(pVbLayout->getElementFormat(elemDesc.elementIndex));
+                    // Get the position VB
+                    const auto& elemDesc = pVao->getElementIndexByLocation(VERTEX_POSITION_LOC);
+                    const auto& pVbLayout = pVao->getVertexLayout()->getBufferLayout(elemDesc.vbIndex);
 
-                // Get the IB
-                const Buffer* pIB = pVao->getIndexBuffer().get();
-                pContext->resourceBarrier(pIB, Resource::State::NonPixelShader);
-                desc.Triangles.IndexBuffer = pIB->getGpuAddress();
-                desc.Triangles.IndexCount = pMesh->getIndexCount();
-                desc.Triangles.IndexFormat = getDxgiFormat(pVao->getIndexBufferFormat());
+                    const Buffer* pVB = pVao->getVertexBuffer(elemDesc.vbIndex).get();
+                    pContext->resourceBarrier(pVB, Resource::State::NonPixelShader);
+                    desc.Triangles.VertexBuffer.StartAddress = pVB->getGpuAddress() + pVbLayout->getElementOffset(elemDesc.elementIndex);
+                    desc.Triangles.VertexBuffer.StrideInBytes = pVbLayout->getStride();
+                    desc.Triangles.VertexCount = pMesh->getVertexCount();
+                    desc.Triangles.VertexFormat = getDxgiFormat(pVbLayout->getElementFormat(elemDesc.elementIndex));
+
+                    // Get the IB
+                    const Buffer* pIB = pVao->getIndexBuffer().get();
+                    pContext->resourceBarrier(pIB, Resource::State::NonPixelShader);
+                    desc.Triangles.IndexBuffer = pIB->getGpuAddress();
+                    desc.Triangles.IndexCount = pMesh->getIndexCount();
+                    desc.Triangles.IndexFormat = getDxgiFormat(pVao->getIndexBufferFormat());
+                }
+                else
+                {
+                    assert(pVao->getPrimitiveTopology() == Vao::Topology::BoundingBoxList);
+                    desc.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_PROCEDURAL_PRIMITIVE_AABBS;
+                    desc.AABBs.AABBs.StartAddress = pVao->getVertexBuffer(0)->getGpuAddress();
+                    desc.AABBs.AABBs.StrideInBytes = 24;
+                    desc.AABBs.AABBCount = pMesh->getVertexCount() / 6;
+                }
 
                 // If this is an opaque mesh, set the opaque flag
-                if (pMesh->getMaterial()->getAlphaMode() == AlphaModeOpaque)
+                if (pMesh->getMaterial() == nullptr || pMesh->getMaterial()->getAlphaMode() == AlphaModeOpaque)
                 {
                     desc.Flags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
                 }

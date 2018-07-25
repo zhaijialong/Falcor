@@ -170,7 +170,7 @@ namespace Falcor
                         idesc.InstanceMask = 0xff;
                         const auto& pMaterial = pModel->getMeshInstance(blasData.meshBaseIndex, meshInstance)->getObject()->getMaterial();
                         idesc.Flags = D3D12_RAYTRACING_INSTANCE_FLAG_NONE;
-                        if (pMaterial->getDoubleSided())
+                        if (pMaterial && pMaterial->getDoubleSided())
                         {
                             idesc.Flags |= D3D12_RAYTRACING_INSTANCE_FLAG_TRIANGLE_CULL_DISABLE;
                         }
