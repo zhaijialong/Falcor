@@ -37,10 +37,6 @@ float4 main(VertexOut vOut) : SV_TARGET
 {
     ShadingData sd = prepareShadingData(vOut, gMaterial, gCamera.posW);
     ShadingResult sr = evalMaterial(sd, gLightProbe);
-    float3 outDir = refract(-sd.V, sd.N, 1/1.51);
-    float3 e = gEnvMap.SampleLevel(gSampler, dirToSphericalCrd(outDir), linearRoughnessToLod(sd.roughness, 6)).rgb;
-
-    e *= (1 - opacity) * (1 - gMaterial.specular.b);
-    sr.color.rgb += e;
+    sr.color.rgb += calcTranslucencyColor(sd, 1.5, gEnvMap, gSampler);
     return sr.color;
 }

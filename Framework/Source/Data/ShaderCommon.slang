@@ -122,6 +122,7 @@ struct ShadingData
     float3 lightMap;
     float2 height;
     float IoR;
+    float metalness;
     bool doubleSidedMaterial;
 };
 

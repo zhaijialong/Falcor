@@ -172,8 +172,9 @@ ShadingData prepareShadingData(VertexOut v, MaterialData m, float3 camPosW)
     {
         // R - Occlusion; G - Roughness; B - Metalness
         sd.diffuse = lerp(baseColor.rgb, float3(0), spec.b);
-
+        
         // UE4 uses 0.08 multiplied by a default specular value of 0.5 as a base, hence the 0.04
+        sd.metalness = spec.b;
         sd.specular = lerp(float3(0.04f), baseColor.rgb, spec.b);
         sd.linearRoughness = spec.g;
 
@@ -264,6 +265,14 @@ ShadingResult evalMaterial(ShadingData sd, LightProbeData probe)
     sr.specular = saturate(evalGGX(sd.roughness, ls.NdotH)) * ls.specular * sd.specular;
     sr.color.rgb += sr.specular;
     return sr;
+}
+
+float3 calcTranslucencyColor(ShadingData sd, float ior, Texture2D envMap, SamplerState samplerState)
+{
+    float3 outDir = refract(-sd.V, sd.N, 1 / ior);
+    float3 e = envMap.SampleLevel(samplerState, dirToSphericalCrd(outDir), linearRoughnessToLod(sd.roughness, 6)).rgb;
+    e *= (1 - opacity) * (1 - sd.metalness);
+    return e;
 }
 
 #endif	// _FALCOR_SHADING_SLANG_
