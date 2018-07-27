@@ -85,4 +85,6 @@ private:
     Sampler::SharedPtr mpLinearSampler = nullptr;
     DepthStencilState::SharedPtr mpDepthState = nullptr;
     RasterizerState::SharedPtr mpRasterizerState = nullptr;
+
+    float mOpacity = 1.0f;
 };

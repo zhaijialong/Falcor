@@ -120,6 +120,9 @@ void LightProbeViewer::updateLightProbe(LightProbe::SharedPtr pLightProbe)
     {
         mpSkyBox = SkyBox::createFromTexture(pLightProbe->getOrigTexture()->getSourceFilename());
     }
+
+    mpVars->setTexture("gEnvMap", mpSkyBox->getTexture());
+    mpVars->setSampler("gSampler", mpLinearSampler);
 }
 
 void LightProbeViewer::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
@@ -134,6 +137,7 @@ void LightProbeViewer::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
             updateLightProbe(LightProbe::create(pSample->getRenderContext().get(), filename, true, ResourceFormat::RGBA16Float, mDiffuseSamples, mSpecSamples));
         }
     }
+
     if (mpLightProbe != nullptr)
     {
         std::string diffText = "Diffuse Sample Count: " + std::to_string(mpLightProbe->getDiffSampleCount());
@@ -162,6 +166,8 @@ void LightProbeViewer::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 
         pGui->addText("Specular Viewport Mip Level");
         pGui->addIntVar("##SpecMip", mSpecMip, 0, mpLightProbe->getSpecularTexture()->getMipCount() - 1);
+
+        pGui->addFloatVar("Opacity", mOpacity, 0, 1);
     }
 }
 
@@ -183,6 +189,8 @@ void LightProbeViewer::onFrameRender(SampleCallbacks* pSample, RenderContext::Sh
     {
         mCameraController.update();
         mpState->setFbo(pTargetFbo);
+
+        mpVars["PerFrame"]["opacity"] = mOpacity;
 
         // Where to render the scene to
         uvec4 destRect = (mSelectedView == Viewport::Scene) ? mMainRect : mRects[(uint32_t)Viewport::Scene];
