@@ -34,6 +34,11 @@ __import Lights;
 __import BRDF;
 __import Helpers;
 
+cbuffer PerFrame
+{
+    float opacity;
+}
+
 /** Load data from a texture
 */
 float4 sampleTexture(Texture2D t, SamplerState s, float2 uv, float4 factor, uint mode)
@@ -254,7 +259,7 @@ ShadingResult evalMaterial(ShadingData sd, LightProbeData probe)
     ShadingResult sr = initShadingResult();
     LightSample ls = evalLightProbe(probe, sd);
 
-    sr.diffuse = sd.diffuse.rgb * ls.diffuse;
+    sr.diffuse = sd.diffuse.rgb * ls.diffuse * opacity;
     sr.color.rgb = sr.diffuse;
     sr.specular = saturate(evalGGX(sd.roughness, ls.NdotH)) * ls.specular * sd.specular;
     sr.color.rgb += sr.specular;

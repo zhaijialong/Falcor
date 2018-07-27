@@ -30,11 +30,6 @@ __import Shading;
 __import Helpers;
 __import Lights;
 
-cbuffer PerFrame
-{
-    float opacity;
-}
-
 Texture2D gEnvMap;
 SamplerState gSampler;
 
@@ -43,8 +38,9 @@ float4 main(VertexOut vOut) : SV_TARGET
     ShadingData sd = prepareShadingData(vOut, gMaterial, gCamera.posW);
     ShadingResult sr = evalMaterial(sd, gLightProbe);
     float3 outDir = refract(-sd.V, sd.N, 1/1.51);
-    float3 e = gEnvMap.SampleLevel(gSampler, dirToSphericalCrd(outDir), linearRoughnessToLod(sd.roughness, 5)).rgb;
-    float3 c = lerp(e, sr.diffuse, opacity);
-    c += sr.specular;
-    return float4(c, 1);
+    float3 e = gEnvMap.SampleLevel(gSampler, dirToSphericalCrd(outDir), linearRoughnessToLod(sd.roughness, 6)).rgb;
+
+    e *= (1 - opacity) * (1 - gMaterial.specular.b);
+    sr.color.rgb += e;
+    return sr.color;
 }
