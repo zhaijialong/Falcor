@@ -37,6 +37,7 @@ __import Helpers;
 cbuffer PerFrame
 {
     float opacity;
+    LightData dirLight;
 }
 
 /** Load data from a texture
@@ -270,6 +271,7 @@ ShadingResult evalMaterial(ShadingData sd, LightProbeData probe)
 float3 calcTranslucencyColor(ShadingData sd, float ior, Texture2D envMap, SamplerState samplerState)
 {
     float3 outDir = refract(-sd.V, sd.N, 1 / ior);
+    outDir = refract(outDir, sd.V, ior);
     float3 e = envMap.SampleLevel(samplerState, dirToSphericalCrd(outDir), linearRoughnessToLod(sd.roughness, 6)).rgb;
     e *= (1 - opacity) * (1 - sd.metalness);
     return e;

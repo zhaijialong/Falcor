@@ -86,5 +86,6 @@ private:
     DepthStencilState::SharedPtr mpDepthState = nullptr;
     RasterizerState::SharedPtr mpRasterizerState = nullptr;
 
+    DirectionalLight::SharedPtr mpDirLight;
     float mOpacity = 1.0f;
 };

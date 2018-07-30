@@ -37,6 +37,8 @@ float4 main(VertexOut vOut) : SV_TARGET
 {
     ShadingData sd = prepareShadingData(vOut, gMaterial, gCamera.posW);
     ShadingResult sr = evalMaterial(sd, gLightProbe);
-    sr.color.rgb += calcTranslucencyColor(sd, 1.5, gEnvMap, gSampler);
-    return sr.color;
+    sr.color.rgb += evalMaterial(sd, dirLight, 1).color.rgb;
+    float3 t = calcTranslucencyColor(sd, 1.5, gEnvMap, gSampler);
+    sr.color.rgb = t;
+    return float4(sr.color.rgb, 1);
 }

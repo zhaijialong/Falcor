@@ -101,6 +101,9 @@ void LightProbeViewer::onLoad(SampleCallbacks* pSample, RenderContext::SharedPtr
     pSample->setDefaultGuiSize(250, 250);
 
     updateLightProbe(LightProbe::create(pRenderContext.get(), kEnvMapName, true, ResourceFormat::RGBA16Float, mDiffuseSamples, mSpecSamples));
+    mpDirLight = DirectionalLight::create();
+    mpDirLight->setWorldDirection(normalize(vec3(-1, -1, -1)));
+    mpDirLight->setIntensity(vec3(1));
 }
 
 void LightProbeViewer::updateLightProbe(LightProbe::SharedPtr pLightProbe)
@@ -168,6 +171,8 @@ void LightProbeViewer::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
         pGui->addIntVar("##SpecMip", mSpecMip, 0, mpLightProbe->getSpecularTexture()->getMipCount() - 1);
 
         pGui->addFloatVar("Opacity", mOpacity, 0, 1);
+
+        mpDirLight->renderUI(pGui, "DirLight");
     }
 }
 
@@ -191,6 +196,7 @@ void LightProbeViewer::onFrameRender(SampleCallbacks* pSample, RenderContext::Sh
         mpState->setFbo(pTargetFbo);
 
         mpVars["PerFrame"]["opacity"] = mOpacity;
+        mpDirLight->setIntoProgramVars(mpVars.get(), mpVars["PerFrame"].get(), "dirLight");
 
         // Where to render the scene to
         uvec4 destRect = (mSelectedView == Viewport::Scene) ? mMainRect : mRects[(uint32_t)Viewport::Scene];
@@ -347,5 +353,5 @@ int main(int argc, char** argv)
     config.argv = argv;
     Sample::run(config, pRenderer);
 #endif
-    return 0;
+    return 0;    
 }
