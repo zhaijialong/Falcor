@@ -55,6 +55,8 @@ namespace Falcor
         {
             double lastUpdateTime;
             float accel;
+            float curRot = 0;
+            bool applyRot = false;
         };
 
         // The range is 0 to 45 deg
@@ -63,9 +65,6 @@ namespace Falcor
         static std::unordered_map<std::string, Data> accel;
 
         auto& p = accel[pMesh->getName()];
-        mat4 t = pMesh->getTransform();
-        float x, y, z;
-        glm::extractEulerAngleXYZ(t, x, y, z);
 
         if(p.lastUpdateTime != currentTime)
         {
@@ -75,19 +74,24 @@ namespace Falcor
 
             float ms = float(currentTime - p.lastUpdateTime);
 
-            float maxAc = (maxRad - y) * gAcceleration * ms;
-            float minAc = -y * gAcceleration * ms;
+            float maxAc = (maxRad - p.curRot) * gAcceleration * ms;
+            float minAc = -p.curRot * gAcceleration * ms;
             std::uniform_real_distribution<> dis(minAc, maxAc);
             p.accel += float(dis(gen));
             p.lastUpdateTime = currentTime;
+
+            float newRot = p.accel + p.curRot;
+            p.applyRot = (newRot >= 0 && newRot <= maxRad);
+            if(p.applyRot) p.curRot = newRot;
         }
 
-        y += p.accel;
-        if(y >= 0 && y <= maxRad)
+        if(p.applyRot)
         {
+            mat4 t = pMesh->getTransform();
             t *= glm::eulerAngleY(p.accel);
+            pMesh->setTransform(t);
         }
-        pMesh->setTransform(t);
+
     }
 
     uint32_t Model::sModelCounter = 0;
