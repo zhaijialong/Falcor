@@ -481,7 +481,7 @@ namespace Falcor
                     aiToFalcorMesh[aiId] = createMesh(pScene->mMeshes[aiId]);
                 }
 
-                mModel.addMeshInstance(aiToFalcorMesh[aiId], aiMatToGLM(transform));
+                mModel.addMeshInstance(aiToFalcorMesh[aiId], aiMatToGLM(transform), pCurrent->mName.C_Str());
             }
         }
 

@@ -165,8 +165,8 @@ namespace Falcor
         {
             glm::vec3 result;
 
-            glm::mat4 rotationMtx = createMatrixFromLookAt(mBase.translation, mBase.target, mBase.up);
-            glm::extractEulerAngleXYZ(rotationMtx, result[1], result[0], result[2]); // YawPitchRoll is YXZ
+//            glm::mat4 rotationMtx = createMatrixFromLookAt(mBase.translation, mBase.target, mBase.up);
+            glm::extractEulerAngleXYZ(mFinalTransformMatrix, result[1], result[0], result[2]); // YawPitchRoll is YXZ
 
             return result;
         }
@@ -233,6 +233,10 @@ namespace Falcor
         {
             return inherit_shared_from_this < IMovableObject, ObjectInstance>::shared_from_this();
         }
+
+        mat4 getTransform() const { return mFinalTransformMatrix; }
+
+        void setTransform(mat4 t) { mFinalTransformMatrix = t; }
     private:
 
         void updateInstanceProperties() const

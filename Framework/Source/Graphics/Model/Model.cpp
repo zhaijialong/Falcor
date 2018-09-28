@@ -41,9 +41,54 @@
 #include "Graphics/Camera/Camera.h"
 #include "API/VAO.h"
 #include <set>
+#include <random>
 
 namespace Falcor
 {
+    float gAcceleration = 0.008f;
+
+    static uint64_t frameId = 0;
+
+    void rotate(Model::MeshInstance* pMesh, double currentTime)
+    {
+        struct Data
+        {
+            double lastUpdateTime;
+            float accel;
+        };
+
+        // The range is 0 to 45 deg
+        static const float maxRad = radians(45.0f);
+
+        static std::unordered_map<std::string, Data> accel;
+
+        auto& p = accel[pMesh->getName()];
+        mat4 t = pMesh->getTransform();
+        float x, y, z;
+        glm::extractEulerAngleXYZ(t, x, y, z);
+
+        if(p.lastUpdateTime != currentTime)
+        {
+            // Apply a random change
+            static std::random_device rd;  //Will be used to obtain a seed for the random number engine
+            static std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+
+            float ms = float(currentTime - p.lastUpdateTime);
+
+            float maxAc = (maxRad - y) * gAcceleration * ms;
+            float minAc = -y * gAcceleration * ms;
+            std::uniform_real_distribution<> dis(minAc, maxAc);
+            p.accel += float(dis(gen));
+            p.lastUpdateTime = currentTime;
+        }
+
+        y += p.accel;
+        if(y >= 0 && y <= maxRad)
+        {
+            t *= glm::eulerAngleY(p.accel);
+        }
+        pMesh->setTransform(t);
+    }
 
     uint32_t Model::sModelCounter = 0;
     const char* Model::kSupportedFileFormatsStr = "Supported Formats\0*.obj;*.bin;*.dae;*.x;*.md5mesh;*.ply;*.fbx;*.3ds;*.blend;*.ase;*.ifc;*.xgl;*.zgl;*.dxf;*.lwo;*.lws;*.lxo;*.stl;*.x;*.ac;*.ms3d;*.cob;*.scn;*.3d;*.mdl;*.mdl2;*.pk3;*.smd;*.vta;*.raw;*.ter\0\0";
@@ -221,6 +266,8 @@ namespace Falcor
 
     bool Model::animate(double currentTime)
     {
+        frameId++;
+
         bool changed = false;
         if(mpAnimationController)
         {
@@ -232,6 +279,19 @@ namespace Falcor
                 changed = true;
             }
         }
+
+        for (auto& meshList : mMeshes)
+        {
+            if (meshList[0]->getName().find("_Wind") != std::string::npos)
+            {
+                for (auto& pMesh : meshList)
+                {
+                    rotate(pMesh.get(), currentTime);
+                }
+                changed = true;
+            }
+        }
+
         return changed;
     }
 
@@ -341,7 +401,7 @@ namespace Falcor
         return false;
     }
 
-    void Model::addMeshInstance(const Mesh::SharedPtr& pMesh, const glm::mat4& baseTransform)
+    void Model::addMeshInstance(const Mesh::SharedPtr& pMesh, const glm::mat4& baseTransform, const std::string& name)
     {
         int32_t meshID = -1;
 
@@ -362,7 +422,7 @@ namespace Falcor
             meshID = (int32_t)mMeshes.size() - 1;
         }
 
-        mMeshes[meshID].push_back(MeshInstance::create(pMesh, baseTransform));
+        mMeshes[meshID].push_back(MeshInstance::create(pMesh, baseTransform, name));
     }
 
     void Model::sortMeshes()

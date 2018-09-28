@@ -27,7 +27,7 @@
 ***************************************************************************/
 #include "ForwardRenderer.h"
 
-const std::string ForwardRenderer::skDefaultScene = "Arcade/Arcade.fscene";
+const std::string ForwardRenderer::skDefaultScene = "Bistro_Night/Bistro_Exterior_Night.fscene";
 
 void ForwardRenderer::initDepthPass()
 {

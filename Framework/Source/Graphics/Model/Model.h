@@ -150,7 +150,7 @@ namespace Falcor
             \param[in] pMesh Mesh geometry
             \param[in] baseTransform Base transform for the instance
         */
-        void addMeshInstance(const Mesh::SharedPtr& pMesh, const glm::mat4& baseTransform);
+        void addMeshInstance(const Mesh::SharedPtr& pMesh, const glm::mat4& baseTransfor, const std::string& name = std::string());
 
         /** Check if the model contains animations.
         */
@@ -251,7 +251,6 @@ namespace Falcor
         /** Reset all global id counter of model, mesh and material
         */
         static void resetGlobalIdCounter();
-
 
     protected:
         friend class SimpleModelImporter;
