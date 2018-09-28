@@ -28,7 +28,7 @@
 #include "HelloDXR.h"
 
 static const glm::vec4 kClearColor(0.38f, 0.52f, 0.10f, 1);
-static const std::string kDefaultScene = "Arcade/Arcade.fscene";
+static const std::string kDefaultScene = "Bistro_Night/Bistro_Exterior_Night.fscene";
 
 std::string to_string(const vec3& v)
 {
@@ -58,7 +58,7 @@ void HelloDXR::onGuiRender(SampleCallbacks* pSample, Gui* pGui)
 
 void HelloDXR::loadScene(const std::string& filename, const Fbo* pTargetFbo)
 {
-    mpScene = RtScene::loadFromFile(filename, RtBuildFlags::None, Model::LoadFlags::RemoveInstancing);
+    mpScene = RtScene::loadFromFile(filename, RtBuildFlags::None, Model::LoadFlags::None);
     Model::SharedPtr pModel = mpScene->getModel(0);
     float radius = pModel->getRadius();
 
@@ -81,6 +81,11 @@ void HelloDXR::loadScene(const std::string& filename, const Fbo* pTargetFbo)
     mpSceneRenderer = SceneRenderer::create(mpScene);
     mpRtVars = RtProgramVars::create(mpRaytraceProgram, mpScene);
     mpRtRenderer = RtSceneRenderer::create(mpScene);
+
+    if (mpScene->getPathCount())
+    {
+        mpScene->getPath(0)->detachAllObjects();
+    }
 }
 
 void HelloDXR::onLoad(SampleCallbacks* pSample, const RenderContext::SharedPtr& pRenderContext)
@@ -145,6 +150,7 @@ void HelloDXR::onFrameRender(SampleCallbacks* pSample, const RenderContext::Shar
     if(mpScene)
     {
         mpGraphicsState->setFbo(pTargetFbo);
+        mpSceneRenderer->update(pSample->getCurrentTime());
         mCamController.update();
 
         if (mRayTrace)

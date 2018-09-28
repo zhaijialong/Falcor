@@ -51,7 +51,7 @@ namespace Falcor
         for (const auto& instanceList : mMeshes)
         {
             assert(instanceList.size() > 0);
-            if (instanceList[0]->getObject()->hasBones() || instanceList[0]->getName().find("_Wind") != std::string::npos)
+            if (instanceList[0]->getObject()->hasBones())
             {
                 dynamicMeshes.push_back(instanceList);
                 continue;
