@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="UpscaleFilter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="UpscaleFilter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Data">
+      <UniqueIdentifier>{832325a9-6623-425b-a35a-8462b9cf9fef}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Data\lena512color.tiff">
+      <Filter>Data</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data\UpscaleFilter.ps.hlsl">
+      <Filter>Data</Filter>
+    </None>
+  </ItemGroup>
+</Project>
